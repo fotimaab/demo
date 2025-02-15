@@ -28,19 +28,21 @@ import java.util.Map;
         invokeMode = InvokeMode.BUFFERED
 )
 
-public class HelloWorld implements RequestHandler<APIGatewayV2HTTPEvent, Map<String, Object>> {
+public class HelloWorld implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
-    public Map<String, Object> handleRequest(APIGatewayV2HTTPEvent request, Context context) {
-        Map<String, Object> response = new HashMap<>();
+    public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
         String method = getMethod(request);
         String path = getPath(request);
 
+        APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();
+        response.setHeaders(Map.of("Content-Type", "application/json"));
+
         if ("/hello".equals(path) && "GET".equals(method)) {
-            response.put("statusCode", 200);
-            response.put("message", "Hello from Lambda");
+            response.setStatusCode(200);
+            response.setBody("{\"message\": \"Hello from Lambda\"}");
         } else {
-            response.put("statusCode", 400);
-            response.put("message", "Bad request syntax or unsupported method. Request path: " + path +". HTTP method: " + method);
+            response.setStatusCode(400);
+            response.setBody("{\"message\": \"Bad request syntax or unsupported method. Request path: " + path + ". HTTP method: " + method + "\"}");
         }
         return response;
     }
